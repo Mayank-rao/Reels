@@ -1,5 +1,6 @@
 const reels = [
   {
+    ismuted:true,
     slide: 1,
     username: "mayank_here",
     userProfile: "https://picsum.photos/seed/user1/200",
@@ -11,6 +12,7 @@ const reels = [
     isFollowed: false
   },
   {
+    ismuted:true,
     slide: 2,
     username: "tech_savage",
     userProfile: "https://picsum.photos/seed/user2/200",
@@ -22,6 +24,7 @@ const reels = [
     isFollowed: true
   },
   {
+     ismuted:true,
     slide: 3,
     username: "Mayan-kuu.Yadav",
     userProfile: "https://picsum.photos/seed/user3/200",
@@ -32,7 +35,7 @@ const reels = [
     shareCount: 12,
     isFollowed: false
   },
-  {
+  { ismuted:true,
     slide: 4,
     username: "fitness_freak",
     userProfile: "https://picsum.photos/seed/user4/200",
@@ -43,7 +46,7 @@ const reels = [
     shareCount: 65,
     isFollowed: true
   },
-  {
+  { ismuted:true,
     slide: 5,
     username: "Mayan-kuu.Yadav",
     userProfile: "https://picsum.photos/seed/user5/200",
@@ -54,7 +57,7 @@ const reels = [
     shareCount: 19,
     isFollowed: false
   },
-  {
+  { ismuted:true,
     slide: 6,
     username: "chef_master",
     userProfile: "https://picsum.photos/seed/user6/200",
@@ -65,7 +68,7 @@ const reels = [
     shareCount: 98,
     isFollowed: true
   },
-  {
+  { ismuted:true,
     slide: 7,
     username: "Mayan-kuu.Yadav",
     userProfile: "https://picsum.photos/seed/user7/200",
@@ -76,7 +79,7 @@ const reels = [
     shareCount: 120,
     isFollowed: false
   },
-  {
+  { ismuted:true,
     slide: 8,
     username: "fashion_icon",
     userProfile: "https://picsum.photos/seed/user8/200",
@@ -87,7 +90,7 @@ const reels = [
     shareCount: 40,
     isFollowed: true
   },
-  {
+  { ismuted:true,
     slide: 9,
     username: "Mayan-kuu.Yadav",
     userProfile: "https://picsum.photos/seed/user9/200",
@@ -98,7 +101,7 @@ const reels = [
     shareCount: 210,
     isFollowed: false
   },
-  {
+  { ismuted:true,
     slide: 10,
     username: "art_creator",
     userProfile: "https://picsum.photos/seed/user10/200",
@@ -110,10 +113,15 @@ const reels = [
     isFollowed: false
   }
 ];
-var sum='';
-reels.forEach(function(elem){
+
+  var allreels = document.querySelector(".allreels")
+function addData(){
+  var sum='';
+
+reels.forEach(function(elem,idx){    //playsinline  preload="auto"//for video audio playing instead of autoplay
     sum+=`<div class="reel">
-                    <video loop muted playsinline  preload="auto" id="main-img" src="${elem.video}" ></video>
+                    <video autoplay loop ${elem.ismuted?'muted':''}  id="main-img" src="${elem.video}" ></video>
+                      <div id="${idx}" class="mute"> ${elem.ismuted?'<i class="ri-volume-mute-fill"></i>':'<i class="ri-volume-up-fill"></i>'} </div>
                     <div class="bottom">
                         <div class="user">
                             <img src="https://images.unsplash.com/photo-1611601322175-ef8ec8c85f01?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
@@ -123,7 +131,7 @@ reels.forEach(function(elem){
                        <h3>${elem.caption}</h3>      
                     </div>
                     <div class="right">
-                        <div class="like">
+                        <div id="${idx}" class="like">
                             <h4 class="like-icon"><${elem.isFollowed?'i class=" love ri-heart-3-fill"></i>' :'i class="ri-heart-line"}></i>'}</h4>
                             <h6>${elem.likeCount}</h6>
                         </div>
@@ -143,37 +151,36 @@ reels.forEach(function(elem){
   
     // console.log("hello")
 })
-  var allreels = document.querySelector(".allreels")
   allreels.innerHTML= sum
 
-const videos = document.querySelectorAll("#main-img");
-let soundUnlocked = false;
 
-// 1) TAP TO UNLOCK AUDIO ONE TIME
-document.addEventListener("click", () => {
-    if (!soundUnlocked) {
-        videos.forEach(v => v.muted = false);  
-        soundUnlocked = true;
-    }
-});
+}
+addData();
+allreels.addEventListener("click",function(dets){
+if(dets.target.className=='like'){
+    if(!reels[dets.target.id].isFollowed){
+  reels[dets.target.id].likeCount++;
+   reels[dets.target.id].isFollowed=true;
+  }
+  else{
+     reels[dets.target.id].likeCount--;
+      reels[dets.target.id].isFollowed=false;
+  }
+  addData();
+}
+if(dets.target.className=='mute'){
+    if(!reels[dets.target.id].ismuted){
+   reels[dets.target.id].ismuted=true;
+  }
+  else{
+      reels[dets.target.id].ismuted=false;
+  }
+  addData();
+}
+  
+})
 
-// 2) AUTOPLAY CURRENT REEL + PAUSE OTHERS
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-
-        if (entry.isIntersecting) {
-            // play the visible reel
-            entry.target.play().catch(() => {});
-        } else {
-            // pause the non-visible reel
-            entry.target.pause();
-            entry.target.currentTime = 0;  // reset to start
-        }
-
-    });
-}, { threshold: 0.7 });
-
-videos.forEach(v => observer.observe(v));
+  //for playing audio we did this
 // videos.forEach(video => {
 //     video.play().catch(() => {});
 // });
